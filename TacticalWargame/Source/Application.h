@@ -37,7 +37,7 @@ namespace aie
 	public:
 		// Add what you need to make this more efficient.
 		// Get the agents close enough, then loop through to limit them by side etc.
-		void GetAgentsWithinRange(std::vector<Agent*>& agents, float x, float y, float r = -1 );
+		void GetAgentsWithinRange(std::vector<Agent*>& agents, float x, float y, float r = -1.0f );
 		void AddAgent(Agent*);
 
 		DebugModes DebugMode() const;

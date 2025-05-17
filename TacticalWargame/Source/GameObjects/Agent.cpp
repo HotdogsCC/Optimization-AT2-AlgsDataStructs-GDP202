@@ -28,10 +28,25 @@ namespace aie
 	void Agent::Tick(float deltaTime) {
 
 		// If we're dead don't do anything, just return
-
+		if(!IsAlive())
+		{
+			return;
+		}
+		
 		// Otherwise...
 		// Use your range detection system by calling Application::GetApplication()->GetAgentsWithinRange(), to check if another agent is colliding with us
+		std::vector<Agent*> agentsWithinRange;
+		Application::GetApplication()->GetAgentsWithinRange(agentsWithinRange, position.x, position.y, size.x/2.0f);
+		
 		// If they are, resolve the collision so they don't overlap, or overlapping is minimized
+		for (Agent* otherAgent : agentsWithinRange)
+		{
+			//get the distance between the two agents
+			float distance = glm::distance(GetPosition(), otherAgent->GetPosition());
+
+			
+		}
+		
 		// If the other agent is an 'enemy' ,i.e. their ->faction variables are not the same, use the ResolveCombat() function
 		// 
 		// Use your range detection system to get the closest enemy in range 

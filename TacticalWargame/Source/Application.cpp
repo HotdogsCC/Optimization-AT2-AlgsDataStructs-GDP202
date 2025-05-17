@@ -19,8 +19,55 @@ namespace aie {
 	 * of the point defined by (x,y)
 	 * 
 	 */
-	void Application::GetAgentsWithinRange(std::vector<Agent*>& agents, float x, float y, float range)
+	void Application::GetAgentsWithinRange(std::vector<Agent*>& agents, float x, float y, float r)
 	{
+		//if range isn't overloaded, return all agents
+		if(r < 0.0f)
+		{
+			for (GameObject* gameObject : m_objects)
+			{
+				//try to cast the game object to an agent
+				if(Agent* agent = dynamic_cast<Agent*>(gameObject))
+				{
+					//add the agent to the return vector
+					agents.push_back(agent);
+				}
+			}
+
+			return;
+		}
+
+		//get range squared
+		const float rangeSqr = r * r;
+
+		//convert floats to vec for clarity
+		const vec2 thisPos = {x, y};
+		
+		//iterate through all agents in scene
+		for (GameObject* gameObject : m_objects)
+		{
+			//try to cast the game object to an agent
+			if(Agent* agent = dynamic_cast<Agent*>(gameObject))
+			{
+				const vec2 agentPos = agent->GetPosition();
+				const vec2 resultantVec = {thisPos.x - agentPos.x, thisPos.y - agentPos.y};
+
+				//get the squared distance between input position and agent position
+				const float distanceSqr =
+					(resultantVec.x * resultantVec.x) + (resultantVec.y * resultantVec.y);
+
+				//check if distance is in range
+				if(distanceSqr <= rangeSqr)
+				{
+					//add agent to return
+					agents.push_back(agent);
+				}
+			}
+		}
+
+		
+
+		
 	}
 
 }
