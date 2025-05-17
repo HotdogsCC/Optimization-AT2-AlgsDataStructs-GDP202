@@ -26,6 +26,8 @@ namespace aie
 
 		static void ResolveCombat(Agent* attacker, Agent* defender, float dt);
 
+		const Side GetSide();
+
 	private:
 		Attribute hp = 10;
 		Texture live_sprite;
@@ -39,6 +41,10 @@ namespace aie
 		glm::vec2 goal_position = { 0,0 };
 		Side faction = Side::HUMAN;
 		float speed = 5.0f;
+
+		//ranges
+		float collisionRange = 15.0f; //hitbox radius
+		float searchRange = 150.0f; //visibility radius
 	};
 }
 
