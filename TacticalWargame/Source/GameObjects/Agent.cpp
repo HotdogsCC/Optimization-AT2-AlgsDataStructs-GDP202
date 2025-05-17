@@ -139,9 +139,12 @@ namespace aie
 		Application::GetApplication()->GetAgentsWithinRange(agentsWithinRange, position.x, position.y, searchRange);
 
 		//if the target is dead, find a new one
-		if(!target->IsAlive())
+		if(target)
 		{
-			target = nullptr;
+			if(!target->IsAlive())
+			{
+				target = nullptr;
+			}
 		}
 		
 		for (Agent* otherAgent : agentsWithinRange)
