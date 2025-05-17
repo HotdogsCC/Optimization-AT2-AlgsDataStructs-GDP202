@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Content">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{7f955557-a542-434f-966e-399007a55a48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source\Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Content\Textures">
+      <UniqueIdentifier>{3f7a4659-bb53-46c9-81e3-6f7e3c7fea3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Header Files\GameObjects">
+      <UniqueIdentifier>{ad943cb1-0c5d-4bc4-a061-1cf9fc2e560d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Source Files\GameObjects">
+      <UniqueIdentifier>{008c1352-560b-4760-a94e-787cc0bf4cdb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Application.cpp">
+      <Filter>Source\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Window.cpp">
+      <Filter>Source\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Renderer.cpp">
+      <Filter>Source\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GameObjects\Agent.cpp">
+      <Filter>Source\Source Files\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GameObjects\GameObject.cpp">
+      <Filter>Source\Source Files\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GameObjects\Spawner.cpp">
+      <Filter>Source\Source Files\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\UtilityFunctions.cpp">
+      <Filter>Source\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GameObjects\Tilemap.cpp">
+      <Filter>Source\Source Files\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Timer.cpp">
+      <Filter>Source\Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\Application.h">
+      <Filter>Source\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Window.h">
+      <Filter>Source\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Renderer.h">
+      <Filter>Source\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GameObjects\Agent.h">
+      <Filter>Source\Header Files\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GameObjects\GameObject.h">
+      <Filter>Source\Header Files\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GameObjects\Spawner.h">
+      <Filter>Source\Header Files\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\UtilityFunctions.h">
+      <Filter>Source\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Timer.h">
+      <Filter>Source\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Attribute.h">
+      <Filter>Source\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GameObjects\Tilemap.h">
+      <Filter>Source\Header Files\GameObjects</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
