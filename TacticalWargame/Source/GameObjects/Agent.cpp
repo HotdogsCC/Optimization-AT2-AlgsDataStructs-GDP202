@@ -13,7 +13,30 @@ namespace aie
 	// You need to implement a combat system in this function
 	// You can add any variables you need to Agent to facilitate this
 	void Agent::ResolveCombat(Agent* attacker, Agent* defender, float deltaTime) {
+		//instant resolution
+
+		if(attacker == nullptr || defender == nullptr)
+		{
+			return;
+		}
 		
+		//remove targets for both
+		attacker->target = nullptr;
+		defender->target = nullptr;
+
+		
+		float damageDealt = 0;
+		//find out who has the least HP
+		if(attacker->GetHP() > defender->GetHP())
+		{
+			damageDealt = defender->GetHP();
+		}
+		else
+		{
+			damageDealt = attacker->GetHP();
+		}
+		attacker->TakeDamage(damageDealt);
+		defender->TakeDamage(damageDealt);
 	}
 
 
@@ -31,7 +54,6 @@ namespace aie
 		// If we're dead don't do anything, just return
 		if(!IsAlive())
 		{
-			std::cout << "dead";
 			return;
 		}
 		
@@ -43,11 +65,24 @@ namespace aie
 		// If they are, resolve the collision so they don't overlap, or overlapping is minimized
 		for (Agent* otherAgent : agentsWithinRange)
 		{
-			//check that the other agent is not this
-			if(otherAgent == this)
+			if(otherAgent == nullptr)
 			{
 				continue;
 			}
+			
+			//if the other agent is this, or its dead, we dont care
+			if(otherAgent == this || !otherAgent->IsAlive())
+			{
+				continue;
+			}
+			
+			// If the other agent is an 'enemy' ,i.e. their ->faction variables are not the same, use the ResolveCombat() function
+			if(otherAgent->GetSide() != faction)
+			{
+				ResolveCombat(this, otherAgent, deltaTime);
+				return;
+			}
+			
 			//get direction between two agents
 			vec2 directionVector = {otherAgent->GetPosition().x - position.x, otherAgent->GetPosition().y - position.y};
 
@@ -95,21 +130,78 @@ namespace aie
 			SetPosition(thisTarget);
 			otherAgent->SetPosition(otherTarget);
 
-			// If the other agent is an 'enemy' ,i.e. their ->faction variables are not the same, use the ResolveCombat() function
-			if(otherAgent->GetSide() != faction)
-			{
-				ResolveCombat(this, otherAgent, deltaTime);
-				return;
-			}
+			
 			
 		}
 		
 		// Use your range detection system to get the closest enemy in range
+		agentsWithinRange.clear();
+		Application::GetApplication()->GetAgentsWithinRange(agentsWithinRange, position.x, position.y, searchRange);
 
+		//if the target is dead, find a new one
+		if(!target->IsAlive())
+		{
+			target = nullptr;
+		}
+		
+		for (Agent* otherAgent : agentsWithinRange)
+		{
+			//if the other agent is this, or its dead, we dont care
+			if(otherAgent == this || !otherAgent->IsAlive())
+			{
+				continue;
+			}
+			
+			//check that it is an enemy
+			if(otherAgent->GetSide() != faction)
+			{
+				//if we haven't found anything yet, this wins by default
+				if(target == nullptr)
+				{
+					target = otherAgent;
+					continue;
+				}
+
+				//get distance to iterated agent
+				vec2 otherResultantVector = {
+					position.x - otherAgent->GetPosition().x,
+					position.y - otherAgent->GetPosition().y};
+				float distanceToOther = (
+					otherResultantVector.x * otherResultantVector.x
+					+
+					otherResultantVector.y * otherResultantVector.y);
+
+				//get distance to current closest
+				vec2 currentClosestResultantVector = {
+					position.x - target->GetPosition().x,
+					position.y - target->GetPosition().y};
+				float distanceToCurrentClosest = (
+					currentClosestResultantVector.x * currentClosestResultantVector.x
+					+
+					currentClosestResultantVector.y * currentClosestResultantVector.y);
+
+				//check which one is closer
+				if(distanceToOther < distanceToCurrentClosest)
+				{
+					target = otherAgent;
+				}
+				
+			}
+		}
 		
 		// 'Target' the closest enemy and set the goal_position equal to the target Agent's position
+		if(target)
+		{
+			goal_position = target->GetPosition();
+		}
+		//otherwise just move to the centre
+		else
+		{
+			goal_position = {368, 368};
+		}
 		
 		// Rotate the Agent using the goal_position, position and atan2, to set the 'rotation' variable
+		rotation = atan2(goal_position.y - position.y, goal_position.x - position.x) * 57.29578f;
 
 		// Get the underlying terrain using Application::GetApplication()->GetMap()->GetWeight(position.x, position.y)
 		// to calculate a reduction in speed
@@ -134,7 +226,9 @@ namespace aie
 
 namespace aie
 {
-	bool Agent::IsAlive() const { return hp > 0; }
+	bool Agent::IsAlive() const {
+		return hp > 0;
+		}
 
 	Agent::Agent(Texture2D sp[2], Side f, vec2 pos , float spd, float h) 
 		: GameObject{ guid,pos }

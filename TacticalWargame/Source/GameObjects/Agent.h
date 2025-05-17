@@ -28,6 +28,10 @@ namespace aie
 
 		const Side GetSide();
 
+		const Attribute GetHP() {return hp;}
+
+		
+
 	private:
 		Attribute hp = 10;
 		Texture live_sprite;

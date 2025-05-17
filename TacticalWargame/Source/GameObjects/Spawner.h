@@ -20,7 +20,7 @@ namespace aie
 
 	public:
 		//How long between spawns
-		float spawntimer = 20.f;
+		float spawntimer = 200.f;
 
 		//Number of agents to spawn at a time
 		int spawnnumber = 1;
