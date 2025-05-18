@@ -19,6 +19,13 @@ namespace aie {
 	 * of the point defined by (x,y)
 	 * 
 	 */
+
+	SpacialPartition* Application::GetPartition()
+	{
+		return m_partition;
+	}
+
+	
 	void Application::GetAgentsWithinRange(std::vector<Agent*>& agents, float x, float y, float r)
 	{
 		//if range isn't overloaded, return all agents
@@ -80,6 +87,7 @@ namespace aie {
 namespace aie
 {
 	Application* Application::m_instance = nullptr;
+	SpacialPartition* Application::m_partition = nullptr;
 
 	int Application::Execute()
 	{
@@ -178,6 +186,12 @@ namespace aie
 
 	void Application::BeginPlay()
 	{
+		//create a spacial partition index
+		if(m_partition == nullptr)
+		{
+			m_partition = new SpacialPartition();
+		}
+		
 		// Set up the map
 		// This loads a texture and a series of weights that map to features in the terrain
 		// You can use these weights in the Agent Tick() to control the speed.
@@ -217,19 +231,17 @@ namespace aie
 				throw std::runtime_error("Body texture not found");
 
 			Texture2D sprites[] = { sprite,deadsprite };
-
-			float vals[] = { 0.15,0.5,0.85 };
-			auto agent = std::make_shared<Agent>(sprites, Agent::Side::HUMAN, glm::vec2{},6.0f,10.f);
 			
-			for (auto v : vals) {
-				const glm::vec2 pos = { ScreenWidth() * v, ScreenHeight() * (v==0.5? 0.5f : 0.15f) };
-				Spawner* spawner = new Spawner{ pos, agent };
+			auto agent = std::make_shared<Agent>(sprites, Agent::Side::HUMAN, glm::vec2{},6.0f,10.f);
 
-				spawner->spawnnumber = 2;
-				spawner->spawnRadius = 150.f;
+			const vec2 pos = { ScreenWidth() * 0.5f, ScreenHeight() * 0.5f };
+			Spawner* spawner = new Spawner{ pos, agent };
 
-				m_objects.emplace_back(spawner);
-			}
+			spawner->spawnnumber = 5;
+			spawner->spawnRadius = 150.f;
+
+			m_objects.emplace_back(spawner);
+			
 		}
 
 
@@ -247,7 +259,7 @@ namespace aie
 			Texture2D sprites[] = { sprite,deadsprite };
 			auto agent = std::make_shared<Agent>(sprites,Agent::Side::ZOMBIE,glm::vec2{},5.f, 1.f);
 
-			float vals[] = { 0.15,0.5,0.85 };
+			float vals[] = { 0.15f, 0.85f };
 
 			for (auto v : vals) {
 				const glm::vec2 pos = { ScreenWidth() * v, ScreenHeight() * 0.85f };
@@ -315,5 +327,8 @@ namespace aie
 		}
 
 		m_objects.clear();
+
+		//remove the spacial partition 
+		delete m_partition;
 	}
 }

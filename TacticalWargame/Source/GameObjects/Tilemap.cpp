@@ -30,6 +30,9 @@ float aie::Tilemap::GetWeight(float x, float y) const{
     return data[nx + ny * xtiles];
 }
 
+
+
+
 void aie::Tilemap::Render() {
     //Draw the map
     DrawTexture(maptexture, 0, 0, RAYWHITE);

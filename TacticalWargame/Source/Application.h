@@ -3,6 +3,7 @@
 #include <vector>
 #include "GameObjects/Tilemap.h"
 #include "GameObjects/Agent.h"
+#include "SpacialPartition.h"
 
 using std::vector;
 
@@ -31,6 +32,7 @@ namespace aie
 
 	private:
 		static Application* m_instance;
+		static SpacialPartition* m_partition;
 
 		std::unique_ptr<Tilemap> map;
 
@@ -39,6 +41,7 @@ namespace aie
 		// Get the agents close enough, then loop through to limit them by side etc.
 		void GetAgentsWithinRange(std::vector<Agent*>& agents, float x, float y, float r = -1.0f );
 		void AddAgent(Agent*);
+		static SpacialPartition* GetPartition();
 
 		DebugModes DebugMode() const;
 

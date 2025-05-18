@@ -7,6 +7,7 @@
 #include <glm/gtx/compatibility.hpp>
 
 #include "../Renderer.h"
+#include "../SpacialPartition.h"
 
 namespace aie
 {
@@ -59,22 +60,39 @@ namespace aie
 		
 		// Otherwise...
 		// Use your range detection system by calling Application::GetApplication()->GetAgentsWithinRange(), to check if another agent is colliding with us
+		// ^^^ this is suboptimal, and a spatial partition will be used instead ^^^
+
+		//get agents that could be colliding from partition
 		std::vector<Agent*> agentsWithinRange;
-		Application::GetApplication()->GetAgentsWithinRange(agentsWithinRange, position.x, position.y, collisionRange*2);
+		Application::GetPartition()->GetAdjacentAgents(GetPosition(), agentsWithinRange);
 		
-		// If they are, resolve the collision so they don't overlap, or overlapping is minimized
+		// If they are, resolve the collision, so they don't overlap, or overlapping is minimized
 		for (Agent* otherAgent : agentsWithinRange)
 		{
-			if(otherAgent == nullptr)
-			{
-				continue;
-			}
 			
-			//if the other agent is this, or its dead, we dont care
-			if(otherAgent == this || !otherAgent->IsAlive())
+			//if the other agent is this, or dead, or doesn't exist, we dont care
+			if(otherAgent == this || !otherAgent->IsAlive() || otherAgent == nullptr)
 			{
 				continue;
 			}
+
+			//get distance between agents
+			vec2 resultantVector = {
+				otherAgent->GetPosition().x - GetPosition().x,
+				otherAgent->GetPosition().y - GetPosition().y
+			};
+			float distanceSquared =
+				resultantVector.x * resultantVector.x
+				+
+				resultantVector.y * resultantVector.y;
+
+			//if they aren't colliding, there is nothing else to do
+			if(distanceSquared >= (collisionRange * 2 * collisionRange))
+			{
+				return;
+			}
+
+			//Otherwise, if they are colliding....
 			
 			// If the other agent is an 'enemy' ,i.e. their ->faction variables are not the same, use the ResolveCombat() function
 			if(otherAgent->GetSide() != faction)
@@ -126,7 +144,8 @@ namespace aie
 				thisTarget.y -= directionVector.y * pushBack;
 				otherTarget.y += directionVector.y * pushBack;
 			}
-			
+
+			//resolve the collision by setting new positions
 			SetPosition(thisTarget);
 			otherAgent->SetPosition(otherTarget);
 
@@ -213,10 +232,25 @@ namespace aie
 		// Move the Agent towards the goal_position using the speed variable and the reduction from the terrain.
 		vec2 directionToGoal = {goal_position.x - position.x, goal_position.y -position.y};
 		directionToGoal = normalize(directionToGoal);
-		
+
+		//set the new position to the target
 		vec2 targetPos = position + (directionToGoal * deltaTime * scaledSpeed);
 		SetPosition(targetPos);
+
+		//check if the agent has entered a new spacial partition zone
+		if(currentSpatialIndex != Application::GetPartition()->GetIndex(GetPosition()))
+		{
+			//update the agent to be apart of the correct spacial partition zone
+			Application::GetPartition()->UpdateAgent(this);
+			currentSpatialIndex = Application::GetPartition()->GetIndex(GetPosition());
+		}
 	}
+
+	vec2Int Agent::GetCurrentSpatialIndex()
+	{
+		return currentSpatialIndex;
+	}
+
 
 }
 
@@ -241,6 +275,10 @@ namespace aie
 		, speed{ spd }
 		, hp{h}
 	{
+		//find out where the agent is and initialise with the partition
+		currentSpatialIndex = Application::GetPartition()->GetIndex(GetPosition());
+		Application::GetPartition()->AddAgent(this);
+		
 	}
 
 	void Agent::Render()
