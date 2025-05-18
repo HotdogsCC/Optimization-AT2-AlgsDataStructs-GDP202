@@ -311,10 +311,33 @@ namespace aie
 		// Render the map first
 		map->Render();
 
+		//alive agents should render on top of dead ones
+
+		//stores references to all agents that are alive
+		std::vector<Agent*> aliveAgents;
+
 		// Render the objects
 		for(const auto& object : m_objects)
 		{
+			//try to cast to an agent
+			if (Agent* agent = dynamic_cast<Agent*>(object))
+			{
+				//if the agent is alive, save it for the second render pass
+				if (agent->IsAlive())
+				{
+					aliveAgents.push_back(agent);
+					continue;
+				}
+			}
+			//if the agent is dead, or the object isn't an agent at all, render it
 			object->Render();
+			
+		}
+
+		// Render the agents that are alive
+		for (Agent* agent : aliveAgents)
+		{
+			agent->Render();
 		}
 	}
 
