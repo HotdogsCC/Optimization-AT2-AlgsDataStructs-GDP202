@@ -57,7 +57,7 @@ namespace aie
 		{
 			return;
 		}
-		
+
 		// Otherwise...
 		// Use your range detection system by calling Application::GetApplication()->GetAgentsWithinRange(), to check if another agent is colliding with us
 		// ^^^ this is suboptimal, and a spatial partition will be used instead ^^^
@@ -86,10 +86,10 @@ namespace aie
 				+
 				resultantVector.y * resultantVector.y;
 
-			//if they aren't colliding, there is nothing else to do
-			if(distanceSquared >= (collisionRange * 2 * collisionRange))
+			//if they aren't colliding, move on to the next
+			if(distanceSquared >= (collisionRange * 2 * collisionRange * 2))
 			{
-				return;
+				continue;
 			}
 
 			//Otherwise, if they are colliding....
@@ -165,7 +165,8 @@ namespace aie
 				target = nullptr;
 			}
 		}
-		
+
+		//loop through enemies to find a target
 		for (Agent* otherAgent : agentsWithinRange)
 		{
 			//if the other agent is this, or its dead, we dont care

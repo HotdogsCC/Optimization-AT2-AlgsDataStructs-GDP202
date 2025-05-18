@@ -207,7 +207,7 @@ void aie::LinkedList::Remove(Agent* agent)
                 parentNode->SetChild(node->GetChild());
             }
 
-            delete node;
+            //delete node;
             return;
         }
 
