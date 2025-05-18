@@ -94,7 +94,7 @@ void aie::SpacialPartition::GetAgentsInPartitionFromCoord(vec2Int coords, std::v
         return;
     }
     //while there are elements down the linked the list
-    while(node->GetPayload())
+    while(node)
     {
         //add the agent to the output
         outVector.push_back(node->GetPayload());
@@ -155,16 +155,31 @@ void aie::SpacialPartition::UpdateAgent(aie::Agent* agent)
 
 void aie::LinkedList::PushBack(Agent* agent)
 {
+    //if the head is empty, this is now the start
+    if(head == nullptr)
+    {
+        //assign that node's child to refer to the agent
+        Node* newNodeInstance = new Node;
+        newNodeInstance->SetPayload(agent);
+        head = newNodeInstance;
+        return;
+    }
+    
     Node* node = head;
+    Node* parentNode = nullptr;
     //keep exploring down the list until there is a break
     while(node)
     {
+        parentNode = node;
         node = node->GetChild();
     }
 
-    //assign that node's child to refer to the agent
-    Node* newNodeInstance = new Node;
-    newNodeInstance->SetPayload(agent);
+    //create the node with the payload
+    node = new Node;
+    node->SetPayload(agent);
+
+    //add it to the child
+    parentNode->SetChild(node);
 }
 
 void aie::LinkedList::Remove(Agent* agent)
@@ -177,8 +192,8 @@ void aie::LinkedList::Remove(Agent* agent)
         //if we found the agent
         if(node->GetPayload() == agent)
         {
-            //if parentNode is null, this node is currently the head and the child should become the head
-            if(parentNode == nullptr)
+            //if this is at the head
+            if(node == head)
             {
                 //sets the new head as the child
                 head = node->GetChild();
@@ -198,6 +213,9 @@ void aie::LinkedList::Remove(Agent* agent)
 
         //set the parentNode as this node, so the next iteration has the reference to the last
         parentNode = node;
+        
+        //otherwise move on to next child
+        node = node->GetChild();
     }
 }
 
