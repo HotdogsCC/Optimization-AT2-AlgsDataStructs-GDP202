@@ -355,7 +355,7 @@ namespace aie
 	void Application::EndPlay()
 	{
 		//output fps data
-		std::ofstream output{ "spatial.csv" };
+		std::ofstream output{ "changeMyNameInApplication::EndPlay.csv" };
 		output << outputString.str();
 		output.close();
 
