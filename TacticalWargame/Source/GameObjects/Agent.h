@@ -52,7 +52,7 @@ namespace aie
 		//ranges
 		float collisionRange = 15.0f; //hitbox radius
 		float searchRange = 150.0f; //visibility radius
-		vec2Int currentSpatialIndex = {0, 0};
+		vec2Int currentSpatialIndex = {0, 0}; //where the player currently is
 	};
 }
 
