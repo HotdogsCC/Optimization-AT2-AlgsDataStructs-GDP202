@@ -19,10 +19,14 @@ namespace aie
     class Node
     {
     public:
+        //returns the agent from a node
         Agent* GetPayload();
+        //sets the agent in a node
         void SetPayload(Agent* agent);
-        
+
+        //gets the child of this node (next node in the list)
         Node* GetChild();
+        //sets the child of this node (next node in the list)
         void SetChild(Node* child);
     private:
         //stores the pointer to the value of this node
@@ -35,8 +39,11 @@ namespace aie
     class LinkedList
     {
     public:
+        //Returns the header node of the list
         Node* GetHead();
+        //adds an agent to the end of the list
         void PushBack(Agent* agent);
+        //removes an agent from the list
         void Remove(Agent* agent);
     private:
         //the head of the list

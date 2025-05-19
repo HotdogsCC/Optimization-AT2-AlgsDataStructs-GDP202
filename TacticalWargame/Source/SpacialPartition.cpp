@@ -5,8 +5,8 @@
 //construction 
 aie::SpacialPartition::SpacialPartition()
 {
+    //initialises all tiles with a linked list
     tiles = new LinkedList** [gridSize];
-    //initialise lists
     for(int i = 0; i < gridSize; i++)
     {
         tiles[i] = new LinkedList* [gridSize];
@@ -19,7 +19,7 @@ aie::SpacialPartition::SpacialPartition()
 
 aie::SpacialPartition::~SpacialPartition()
 {
-    //initialise lists
+    //destroy each list
     for(int i = 0; i < gridSize; i++)
     {
         for(int j = 0; j < gridSize; j++)
@@ -105,12 +105,13 @@ void aie::SpacialPartition::GetAgentsInPartitionFromCoord(vec2Int coords, std::v
     }
 }
 
+//returns the coordinates of the current grid cell an agent is in, given their position
 aie::vec2Int aie::SpacialPartition::GetIndex(glm::vec2 pos)
 {
     return GetIndex(pos.x, pos.y);
 }
 
-
+//returns the coordinates of the current grid cell an agent is in, given their position
 aie::vec2Int aie::SpacialPartition::GetIndex(float posX, float posY) const
 {
     //gets a normalised position (between 0 and 1)
@@ -131,10 +132,12 @@ aie::vec2Int aie::SpacialPartition::GetIndex(float posX, float posY) const
     if (posY < 0.0f)
         yIndex = 0;
 
+    //returns final position
     const vec2Int tilePosition = {xIndex, yIndex};
     return tilePosition;
 }
 
+//adds an agent
 void aie::SpacialPartition::AddAgent(aie::Agent* agent)
 {
     vec2Int coords = GetIndex(agent->GetPosition());
@@ -157,7 +160,7 @@ void aie::SpacialPartition::UpdateAgent(aie::Agent* agent)
 
 void aie::LinkedList::PushBack(Agent* agent)
 {
-    //if the head is empty, this is now the start
+    //if the head is empty, this is now the head of the list
     if(head == nullptr)
     {
         //assign that node's child to refer to the agent
@@ -166,6 +169,8 @@ void aie::LinkedList::PushBack(Agent* agent)
         head = newNodeInstance;
         return;
     }
+
+    //otherwise find the end of the list
     
     Node* node = head;
     Node* parentNode = nullptr;

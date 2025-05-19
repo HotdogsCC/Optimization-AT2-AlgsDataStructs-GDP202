@@ -137,12 +137,17 @@ namespace aie
 
 				//get the distance between the two agents
 				float distance = glm::distance(position, otherAgent->GetPosition());
+
+				//figure out how much the agents need to be pushed back to resolve the collision
 				float pushBack = (collisionRange * 2.0f) - distance;
+
+				//divide by 2 to share the pushback equally
 				pushBack /= 2.0f;
 
 				vec2 thisTarget = position;
 				vec2 otherTarget = otherAgent->GetPosition();
 
+				//figure out which agent is more east, and push them in their respective direction
 				if (position.x > otherAgent->GetPosition().x)
 				{
 					thisTarget.x += directionVector.x * pushBack;
@@ -154,6 +159,7 @@ namespace aie
 					otherTarget.x += directionVector.x * pushBack;
 				}
 
+				//figure out which agent is more south, and push them in their respective direction
 				if (position.y > otherAgent->GetPosition().y)
 				{
 					thisTarget.y += directionVector.y * pushBack;
@@ -228,7 +234,7 @@ namespace aie
 
 				vec2 thisTarget = position;
 				vec2 otherTarget = otherAgent->GetPosition();
-
+				//figure out which agent is more east, and push them in their respective direction
 				if (position.x > otherAgent->GetPosition().x)
 				{
 					thisTarget.x += directionVector.x * pushBack;
@@ -239,7 +245,7 @@ namespace aie
 					thisTarget.x -= directionVector.x * pushBack;
 					otherTarget.x += directionVector.x * pushBack;
 				}
-
+				//figure out which agent is more south, and push them in their respective direction
 				if (position.y > otherAgent->GetPosition().y)
 				{
 					thisTarget.y += directionVector.y * pushBack;
@@ -380,6 +386,10 @@ namespace aie
 		}
 	}
 
+	/*used for seeing where the agent currently thinks it is.
+	 *if this does not match where the agent actually is, the agent
+	 *has moved partitions and will be updated
+	 */
 	vec2Int Agent::GetCurrentSpatialIndex()
 	{
 		return currentSpatialIndex;
