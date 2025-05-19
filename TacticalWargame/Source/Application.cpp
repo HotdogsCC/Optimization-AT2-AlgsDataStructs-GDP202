@@ -4,6 +4,10 @@
 #include <cstdlib>
 #include <stdexcept>
 #include <iostream>
+#include <filesystem>
+#include <string>
+#include <sstream>
+#include <fstream>
 
 #include "Window.h"
 #include "GameObjects/Agent.h"
@@ -88,6 +92,8 @@ namespace aie
 {
 	Application* Application::m_instance = nullptr;
 	SpacialPartition* Application::m_partition = nullptr;
+
+	std::ostringstream outputString;
 
 	int Application::Execute()
 	{
@@ -186,6 +192,9 @@ namespace aie
 
 	void Application::BeginPlay()
 	{
+		//initalise the output string stream
+		outputString << "Framerate" << std::endl;
+
 		//create a spacial partition index
 		if(m_partition == nullptr)
 		{
@@ -280,6 +289,11 @@ namespace aie
 
 	void Application::Tick(const float dt)
 	{
+		//output the fps to the stream
+		float fps = 1000.0f / dt;
+		outputString << fps << std::endl;
+
+		//tick each game object
 		for(const auto& object : m_objects)
 		{
 			object->Tick(dt);
@@ -343,6 +357,11 @@ namespace aie
 
 	void Application::EndPlay()
 	{
+		//output fps data
+		std::ofstream output{ "fps.csv" };
+		output << outputString.str();
+		output.close();
+
 		for(const auto& object : m_objects)
 		{
 			object->EndPlay();

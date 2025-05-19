@@ -100,6 +100,8 @@ namespace aie
 				ResolveCombat(this, otherAgent, deltaTime);
 				return;
 			}
+
+			//otherwise they are of the same faction
 			
 			//get direction between two agents
 			vec2 directionVector = {otherAgent->GetPosition().x - position.x, otherAgent->GetPosition().y - position.y};
@@ -149,78 +151,102 @@ namespace aie
 			SetPosition(thisTarget);
 			otherAgent->SetPosition(otherTarget);
 
+			//and then give them both new goals
+			int randomNumberX = std::rand() % 60;
+			int randomNumberY = std::rand() % 60;
+			goal_position = { 338 + randomNumberX, 338 + randomNumberY };
+
+			randomNumberX = std::rand() % 60;
+			randomNumberY = std::rand() % 60;
+			otherAgent->goal_position = { 338 + randomNumberX, 338 + randomNumberY };
+
 			
 			
 		}
 		
-		// Use your range detection system to get the closest enemy in range
-		agentsWithinRange.clear();
-		Application::GetApplication()->GetAgentsWithinRange(agentsWithinRange, position.x, position.y, searchRange);
-
-		//if the target is dead, find a new one
-		if(target)
+		//if the target is dead, stop targetting them
+		if (target)
 		{
-			if(!target->IsAlive())
+			if (!target->IsAlive())
 			{
 				target = nullptr;
 			}
 		}
 
-		//loop through enemies to find a target
-		for (Agent* otherAgent : agentsWithinRange)
+		//if the agent doesn't have a target, try to find one
+		if (target == nullptr)
 		{
-			//if the other agent is this, or its dead, we dont care
-			if(otherAgent == this || !otherAgent->IsAlive())
+			// Use your range detection system to get the closest enemy in range
+			agentsWithinRange.clear();
+			Application::GetApplication()->GetAgentsWithinRange(agentsWithinRange, position.x, position.y, searchRange);
+
+
+
+			//loop through enemies to find a target
+			for (Agent* otherAgent : agentsWithinRange)
 			{
-				continue;
-			}
-			
-			//check that it is an enemy
-			if(otherAgent->GetSide() != faction)
-			{
-				//if we haven't found anything yet, this wins by default
-				if(target == nullptr)
+				//if the other agent is this, or its dead, we dont care
+				if (otherAgent == this || !otherAgent->IsAlive())
 				{
-					target = otherAgent;
 					continue;
 				}
 
-				//get distance to iterated agent
-				vec2 otherResultantVector = {
-					position.x - otherAgent->GetPosition().x,
-					position.y - otherAgent->GetPosition().y};
-				float distanceToOther = (
-					otherResultantVector.x * otherResultantVector.x
-					+
-					otherResultantVector.y * otherResultantVector.y);
-
-				//get distance to current closest
-				vec2 currentClosestResultantVector = {
-					position.x - target->GetPosition().x,
-					position.y - target->GetPosition().y};
-				float distanceToCurrentClosest = (
-					currentClosestResultantVector.x * currentClosestResultantVector.x
-					+
-					currentClosestResultantVector.y * currentClosestResultantVector.y);
-
-				//check which one is closer
-				if(distanceToOther < distanceToCurrentClosest)
+				//check that it is an enemy
+				if (otherAgent->GetSide() != faction)
 				{
-					target = otherAgent;
+					//if we haven't found anything yet, this wins by default
+					if (target == nullptr)
+					{
+						target = otherAgent;
+						continue;
+					}
+
+					//get distance to iterated agent
+					vec2 otherResultantVector = {
+						position.x - otherAgent->GetPosition().x,
+						position.y - otherAgent->GetPosition().y };
+					float distanceToOther = (
+						otherResultantVector.x * otherResultantVector.x
+						+
+						otherResultantVector.y * otherResultantVector.y);
+
+					//get distance to current closest
+					vec2 currentClosestResultantVector = {
+						position.x - target->GetPosition().x,
+						position.y - target->GetPosition().y };
+					float distanceToCurrentClosest = (
+						currentClosestResultantVector.x * currentClosestResultantVector.x
+						+
+						currentClosestResultantVector.y * currentClosestResultantVector.y);
+
+					//check which one is closer
+					if (distanceToOther < distanceToCurrentClosest)
+					{
+						target = otherAgent;
+					}
+
 				}
-				
 			}
 		}
+
 		
 		// 'Target' the closest enemy and set the goal_position equal to the target Agent's position
 		if(target)
 		{
 			goal_position = target->GetPosition();
 		}
-		//otherwise just move to the centre
+		//otherwise just move somewhere around the centre
 		else
 		{
-			goal_position = {368, 368};
+			// pick a new direction every 500ish frames
+			int randomShouldMove = std::rand() % 500;
+			if (randomShouldMove == 0)
+			{
+				//picks a random location around the centre of the map
+				int randomNumberX = std::rand() % 60;
+				int randomNumberY = std::rand() % 60;
+				goal_position = { 338 + randomNumberX, 338 + randomNumberY };
+			}
 		}
 		
 		// Rotate the Agent using the goal_position, position and atan2, to set the 'rotation' variable
