@@ -2,6 +2,7 @@
 #include <glm/glm.hpp>
 #include "../Application.h"
 #include <iostream>
+#include <chrono>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/compatibility.hpp>
@@ -61,6 +62,9 @@ namespace aie
 		// Otherwise...
 		// Use your range detection system by calling Application::GetApplication()->GetAgentsWithinRange(), to check if another agent is colliding with us
 		// ^^^ this is suboptimal, and a spatial partition will be used instead ^^^
+
+		//get the current time
+		auto then = std::chrono::steady_clock::now();
 
 		//get agents that could be colliding from partition
 		std::vector<Agent*> agentsWithinRange;
@@ -163,6 +167,11 @@ namespace aie
 			
 			
 		}
+
+		// store the amount of time that passed to resolve collisions
+		auto now = std::chrono::steady_clock::now();
+		double timeToExecute = std::chrono::duration<double, std::milli>(now - then).count();
+		Application::GetApplication()->outputString << timeToExecute << std::endl;
 		
 		//if the target is dead, stop targetting them
 		if (target)

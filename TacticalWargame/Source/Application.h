@@ -1,6 +1,10 @@
 #pragma once
 
 #include <vector>
+#include <filesystem>
+#include <string>
+#include <sstream>
+#include <fstream>
 #include "GameObjects/Tilemap.h"
 #include "GameObjects/Agent.h"
 #include "SpacialPartition.h"
@@ -44,6 +48,8 @@ namespace aie
 		static SpacialPartition* GetPartition();
 
 		DebugModes DebugMode() const;
+
+		std::ostringstream outputString;
 
 	private:
 		DebugModes DBMode = DebugModes::HP_ONLY;
