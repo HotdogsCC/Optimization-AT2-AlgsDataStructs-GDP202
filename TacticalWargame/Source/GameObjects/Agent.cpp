@@ -66,106 +66,204 @@ namespace aie
 		//get the current time
 		auto then = std::chrono::steady_clock::now();
 
-		//get agents that could be colliding from partition
+		//	CHANGE FOR TESTING
+		//	CHANGE FOR TESTING
+		bool usingSpatialParts = false;
+		//	CHANGE FOR TESTING
+		//	CHANGE FOR TESTING
+
+
+		/* when using spacial partitions, the vector returned will contain
+		*  agents that [might] be colliding. the standard distance check against
+		*  all agents will return a vector with agents that [are] colliding
+		*/
+
 		std::vector<Agent*> agentsWithinRange;
-		Application::GetPartition()->GetAdjacentAgents(GetPosition(), agentsWithinRange);
-		
-		// If they are, resolve the collision, so they don't overlap, or overlapping is minimized
-		for (Agent* otherAgent : agentsWithinRange)
+		if(usingSpatialParts)
+		{ 
+			//get agents that could be colliding from partition
+			Application::GetPartition()->GetAdjacentAgents(GetPosition(), agentsWithinRange);
+
+			// If they are, resolve the collision, so they don't overlap, or overlapping is minimized
+			for (Agent* otherAgent : agentsWithinRange)
+			{
+
+				//if the other agent is this, or dead, or doesn't exist, we dont care
+				if (otherAgent == this || !otherAgent->IsAlive() || otherAgent == nullptr)
+				{
+					continue;
+				}
+
+				//get distance between agents
+				vec2 resultantVector = {
+					otherAgent->GetPosition().x - GetPosition().x,
+					otherAgent->GetPosition().y - GetPosition().y
+				};
+				float distanceSquared =
+					resultantVector.x * resultantVector.x
+					+
+					resultantVector.y * resultantVector.y;
+
+				//if they aren't colliding, move on to the next
+				if (distanceSquared >= (collisionRange * 2 * collisionRange * 2))
+				{
+					continue;
+				}
+
+				//Otherwise, if they are colliding....
+
+				// If the other agent is an 'enemy' ,i.e. their ->faction variables are not the same, use the ResolveCombat() function
+				if (otherAgent->GetSide() != faction)
+				{
+					ResolveCombat(this, otherAgent, deltaTime);
+					return;
+				}
+
+				//otherwise they are of the same faction
+
+				//get direction between two agents
+				vec2 directionVector = { otherAgent->GetPosition().x - position.x, otherAgent->GetPosition().y - position.y };
+
+				//to stop NaN, make a unit vector if the distance tiny
+				if (directionVector.x <= 0.1f)
+				{
+					directionVector = { 0, 1 };
+				}
+				if (directionVector.y <= 0.1f)
+				{
+					directionVector = { 1, 0 };
+				}
+				directionVector = normalize(directionVector);
+
+				//get the distance between the two agents
+				float distance = glm::distance(position, otherAgent->GetPosition());
+				float pushBack = (collisionRange * 2.0f) - distance;
+				pushBack /= 2.0f;
+
+				vec2 thisTarget = position;
+				vec2 otherTarget = otherAgent->GetPosition();
+
+				if (position.x > otherAgent->GetPosition().x)
+				{
+					thisTarget.x += directionVector.x * pushBack;
+					otherTarget.x -= directionVector.x * pushBack;
+				}
+				else
+				{
+					thisTarget.x -= directionVector.x * pushBack;
+					otherTarget.x += directionVector.x * pushBack;
+				}
+
+				if (position.y > otherAgent->GetPosition().y)
+				{
+					thisTarget.y += directionVector.y * pushBack;
+					otherTarget.y -= directionVector.y * pushBack;
+				}
+				else
+				{
+					thisTarget.y -= directionVector.y * pushBack;
+					otherTarget.y += directionVector.y * pushBack;
+				}
+
+				//resolve the collision by setting new positions
+				SetPosition(thisTarget);
+				otherAgent->SetPosition(otherTarget);
+
+				//and then give them both new goals
+				int randomNumberX = std::rand() % 60;
+				int randomNumberY = std::rand() % 60;
+				goal_position = { 338 + randomNumberX, 338 + randomNumberY };
+
+				randomNumberX = std::rand() % 60;
+				randomNumberY = std::rand() % 60;
+				otherAgent->goal_position = { 338 + randomNumberX, 338 + randomNumberY };
+
+
+
+			}
+		}
+
+		else
 		{
-			
-			//if the other agent is this, or dead, or doesn't exist, we dont care
-			if(otherAgent == this || !otherAgent->IsAlive() || otherAgent == nullptr)
+			//get agents that are collding
+			Application::GetApplication()->GetAgentsWithinRange(agentsWithinRange, position.x, position.y, collisionRange * 2);
+
+			// If they are, resolve the collision, so they don't overlap, or overlapping is minimized
+			for (Agent* otherAgent : agentsWithinRange)
 			{
-				continue;
+
+				//if the other agent is this, or dead, or doesn't exist, we dont care
+				if (otherAgent == this || !otherAgent->IsAlive() || otherAgent == nullptr)
+				{
+					continue;
+				}
+
+				// If the other agent is an 'enemy' ,i.e. their ->faction variables are not the same, use the ResolveCombat() function
+				if (otherAgent->GetSide() != faction)
+				{
+					ResolveCombat(this, otherAgent, deltaTime);
+					return;
+				}
+
+				//otherwise they are of the same faction
+
+				//get direction between two agents
+				vec2 directionVector = { otherAgent->GetPosition().x - position.x, otherAgent->GetPosition().y - position.y };
+
+				//to stop NaN, make a unit vector if the distance tiny
+				if (directionVector.x <= 0.1f)
+				{
+					directionVector = { 0, 1 };
+				}
+				if (directionVector.y <= 0.1f)
+				{
+					directionVector = { 1, 0 };
+				}
+				directionVector = normalize(directionVector);
+
+				//get the distance between the two agents
+				float distance = glm::distance(position, otherAgent->GetPosition());
+				float pushBack = (collisionRange * 2.0f) - distance;
+				pushBack /= 2.0f;
+
+				vec2 thisTarget = position;
+				vec2 otherTarget = otherAgent->GetPosition();
+
+				if (position.x > otherAgent->GetPosition().x)
+				{
+					thisTarget.x += directionVector.x * pushBack;
+					otherTarget.x -= directionVector.x * pushBack;
+				}
+				else
+				{
+					thisTarget.x -= directionVector.x * pushBack;
+					otherTarget.x += directionVector.x * pushBack;
+				}
+
+				if (position.y > otherAgent->GetPosition().y)
+				{
+					thisTarget.y += directionVector.y * pushBack;
+					otherTarget.y -= directionVector.y * pushBack;
+				}
+				else
+				{
+					thisTarget.y -= directionVector.y * pushBack;
+					otherTarget.y += directionVector.y * pushBack;
+				}
+
+				//resolve the collision by setting new positions
+				SetPosition(thisTarget);
+				otherAgent->SetPosition(otherTarget);
+
+				//and then give them both new goals
+				int randomNumberX = std::rand() % 60;
+				int randomNumberY = std::rand() % 60;
+				goal_position = { 338 + randomNumberX, 338 + randomNumberY };
+
+				randomNumberX = std::rand() % 60;
+				randomNumberY = std::rand() % 60;
+				otherAgent->goal_position = { 338 + randomNumberX, 338 + randomNumberY };
 			}
-
-			//get distance between agents
-			vec2 resultantVector = {
-				otherAgent->GetPosition().x - GetPosition().x,
-				otherAgent->GetPosition().y - GetPosition().y
-			};
-			float distanceSquared =
-				resultantVector.x * resultantVector.x
-				+
-				resultantVector.y * resultantVector.y;
-
-			//if they aren't colliding, move on to the next
-			if(distanceSquared >= (collisionRange * 2 * collisionRange * 2))
-			{
-				continue;
-			}
-
-			//Otherwise, if they are colliding....
-			
-			// If the other agent is an 'enemy' ,i.e. their ->faction variables are not the same, use the ResolveCombat() function
-			if(otherAgent->GetSide() != faction)
-			{
-				ResolveCombat(this, otherAgent, deltaTime);
-				return;
-			}
-
-			//otherwise they are of the same faction
-			
-			//get direction between two agents
-			vec2 directionVector = {otherAgent->GetPosition().x - position.x, otherAgent->GetPosition().y - position.y};
-
-			//to stop NaN, make a unit vector if the distance tiny
-			if(directionVector.x <= 0.1f)
-			{
-				directionVector = {0, 1};
-			}
-			if(directionVector.y <= 0.1f)
-			{
-				directionVector = {1, 0};
-			}
-			directionVector = normalize(directionVector);
-			
-			//get the distance between the two agents
-			float distance = glm::distance(position, otherAgent->GetPosition());
-			float pushBack = (collisionRange * 2.0f) - distance;
-			pushBack /= 2.0f;
-
-			vec2 thisTarget = position;
-			vec2 otherTarget = otherAgent->GetPosition();
-			
-			if(position.x > otherAgent->GetPosition().x)
-			{
-				thisTarget.x += directionVector.x * pushBack;
-				otherTarget.x -= directionVector.x * pushBack;
-			}
-			else
-			{
-				thisTarget.x -= directionVector.x * pushBack;
-				otherTarget.x += directionVector.x * pushBack;
-			}
-
-			if(position.y > otherAgent->GetPosition().y)
-			{
-				thisTarget.y += directionVector.y * pushBack;
-				otherTarget.y -= directionVector.y * pushBack;
-			}
-			else
-			{
-				thisTarget.y -= directionVector.y * pushBack;
-				otherTarget.y += directionVector.y * pushBack;
-			}
-
-			//resolve the collision by setting new positions
-			SetPosition(thisTarget);
-			otherAgent->SetPosition(otherTarget);
-
-			//and then give them both new goals
-			int randomNumberX = std::rand() % 60;
-			int randomNumberY = std::rand() % 60;
-			goal_position = { 338 + randomNumberX, 338 + randomNumberY };
-
-			randomNumberX = std::rand() % 60;
-			randomNumberY = std::rand() % 60;
-			otherAgent->goal_position = { 338 + randomNumberX, 338 + randomNumberY };
-
-			
-			
 		}
 
 		// store the amount of time that passed to resolve collisions
