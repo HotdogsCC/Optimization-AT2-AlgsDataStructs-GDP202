@@ -77,7 +77,7 @@ namespace aie
 
 		void EndPlay();
 
-		int numberOfAgentsInSpawner = 400;
+		int numberOfAgentsInSpawner = 10;
 
 		
 	};

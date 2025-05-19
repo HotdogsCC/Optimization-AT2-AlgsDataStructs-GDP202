@@ -236,7 +236,7 @@ namespace aie
 
 			Texture2D sprites[] = { sprite,deadsprite };
 			
-			auto agent = std::make_shared<Agent>(sprites, Agent::Side::HUMAN, glm::vec2{},6.0f,10.f);
+			auto agent = std::make_shared<Agent>(sprites, Agent::Side::HUMAN, glm::vec2{},10.0f,10.f);
 
 			const vec2 pos = { ScreenWidth() * 0.5f, ScreenHeight() * 0.5f };
 			Spawner* spawner = new Spawner{ pos, agent };
@@ -261,7 +261,7 @@ namespace aie
 				throw std::runtime_error("Body texture not found");
 
 			Texture2D sprites[] = { sprite,deadsprite };
-			auto agent = std::make_shared<Agent>(sprites,Agent::Side::ZOMBIE,glm::vec2{},5.f, 1.f);
+			auto agent = std::make_shared<Agent>(sprites,Agent::Side::ZOMBIE,glm::vec2{},8.f, 1.f);
 
 			float vals[] = { 0.15f, 0.85f };
 
