@@ -349,7 +349,7 @@ namespace aie
 	void Application::EndPlay()
 	{
 		//output fps data
-		std::ofstream output{ "regularCollision.csv" };
+		std::ofstream output{ "regular1000.csv" };
 		output << outputString.str();
 		output.close();
 

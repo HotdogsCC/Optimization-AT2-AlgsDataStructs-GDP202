@@ -68,7 +68,7 @@ namespace aie
 
 		//	CHANGE FOR TESTING
 		//	CHANGE FOR TESTING
-		bool usingSpatialParts = false;
+		bool usingSpatialParts = true;
 		//	CHANGE FOR TESTING
 		//	CHANGE FOR TESTING
 

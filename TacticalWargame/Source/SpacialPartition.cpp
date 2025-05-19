@@ -5,10 +5,12 @@
 //construction 
 aie::SpacialPartition::SpacialPartition()
 {
+    tiles = new LinkedList** [gridSize];
     //initialise lists
-    for(int i = 0; i < 14; i++)
+    for(int i = 0; i < gridSize; i++)
     {
-        for(int j = 0; j < 14; j++)
+        tiles[i] = new LinkedList* [gridSize];
+        for(int j = 0; j < gridSize; j++)
         {
             tiles[i][j] = new LinkedList;
         }
@@ -18,9 +20,9 @@ aie::SpacialPartition::SpacialPartition()
 aie::SpacialPartition::~SpacialPartition()
 {
     //initialise lists
-    for(int i = 0; i < 14; i++)
+    for(int i = 0; i < gridSize; i++)
     {
-        for(int j = 0; j < 14; j++)
+        for(int j = 0; j < gridSize; j++)
         {
             delete tiles[i][j];
         }
@@ -54,8 +56,8 @@ void aie::SpacialPartition::GetAdjacentAgents(float posX, float posY, std::vecto
             if(
                 curTilePosition.x < 0 ||
                 curTilePosition.y < 0 ||
-                curTilePosition.x >= 14 ||
-                curTilePosition.y >= 14)
+                curTilePosition.x >= gridSize ||
+                curTilePosition.y >= gridSize)
             {
                 //iterate to next item if it is out of bounds
                 continue;
@@ -116,14 +118,14 @@ aie::vec2Int aie::SpacialPartition::GetIndex(float posX, float posY) const
     posY /= aie::Application::GetApplication()->ScreenHeight();
 
     //gets the tile index of that position 
-    int xIndex = static_cast<int>(14 * posX);
-    int yIndex = static_cast<int>(14 * posY);
+    int xIndex = static_cast<int>(gridSize * posX);
+    int yIndex = static_cast<int>(gridSize * posY);
 
     //overflow correction
     if (posX >= 1.0f)
-        xIndex = 13;
+        xIndex = gridSize - 1;
     if (posY >= 1.0f)
-        yIndex = 13;
+        yIndex = gridSize - 1;
     if (posX < 0.0f)
         xIndex = 0;
     if (posY < 0.0f)

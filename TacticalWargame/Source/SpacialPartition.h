@@ -72,7 +72,10 @@ namespace aie
         void UpdateAgent(aie::Agent* agent);
     private:
         //stores agents that are present in each tile of the partition
-        LinkedList* tiles[14][14]; 
+        LinkedList*** tiles; 
+
+        //stores the grid size
+        int gridSize = 25;
     };
     
     
