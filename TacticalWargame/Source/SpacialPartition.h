@@ -75,7 +75,7 @@ namespace aie
         LinkedList*** tiles; 
 
         //stores the grid size
-        int gridSize = 25;
+        int gridSize = 26;
     };
     
     

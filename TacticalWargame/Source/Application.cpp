@@ -241,7 +241,7 @@ namespace aie
 			const vec2 pos = { ScreenWidth() * 0.5f, ScreenHeight() * 0.5f };
 			Spawner* spawner = new Spawner{ pos, agent };
 
-			spawner->spawnnumber = 5;
+			spawner->spawnnumber = numberOfAgentsInSpawner;
 			spawner->spawnRadius = 150.f;
 
 			m_objects.emplace_back(spawner);
@@ -266,13 +266,19 @@ namespace aie
 			float vals[] = { 0.15f, 0.85f };
 
 			for (auto v : vals) {
-				const glm::vec2 pos = { ScreenWidth() * v, ScreenHeight() * 0.85f };
-				Spawner* spawner = new Spawner(pos, agent);
 
-				spawner->spawnnumber = 15;
-				spawner->spawnRadius = 150.f;
+				for (int i = 0; i < 2; i++)
+				{
+					const glm::vec2 pos = { ScreenWidth() * v, ScreenHeight() * vals[i]};
+					Spawner* spawner = new Spawner(pos, agent);
 
-				m_objects.emplace_back(spawner);
+					spawner->spawnnumber = numberOfAgentsInSpawner;
+					spawner->spawnRadius = 150.f;
+
+					m_objects.emplace_back(spawner);
+				}
+
+				
 			}
 		}
 
@@ -349,7 +355,7 @@ namespace aie
 	void Application::EndPlay()
 	{
 		//output fps data
-		std::ofstream output{ "regular1000.csv" };
+		std::ofstream output{ "spatial.csv" };
 		output << outputString.str();
 		output.close();
 
